@@ -22,7 +22,7 @@ rtm.sendMessage('Hello there again!', conversationId)
     // `res` contains information about the posted message
     console.log('Message sent: ', res.ts);
   })
-  .catch(console.err);
+  .catch(console.error);
 
 slackClient.addAuthenticatedHandler(rtm, () => server.listen(3000));
 
