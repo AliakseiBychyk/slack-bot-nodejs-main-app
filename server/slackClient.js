@@ -15,7 +15,7 @@ function addAuthenticatedHandler(rtm, handler) {
 
 function handleOnMessage(message) {
   nlp.ask(message.text, (err, res) => {
-    if (err) console.error(err);
+    if (err) return console.error(err);
 
     const { location, intent } = res.entities;
 
@@ -24,8 +24,6 @@ function handleOnMessage(message) {
     } else if (intent[0].value === 'time' && location) {
       return rtm.sendMessage(`I don't yet know the time in ${location[0].value}`, message.channel);
     }
-
-    console.log('message', message);
 
     rtm.sendMessage(`Nice to hear you, ${message.user}!`, message.channel)
       .then(res => {

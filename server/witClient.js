@@ -2,6 +2,7 @@ const request = require('superagent');
 
 function handleWitResponse(res) {
   console.log('body: \n', JSON.stringify(res));
+  return res;
 }
 
 module.exports = function witClient(token) {
@@ -15,10 +16,8 @@ module.exports = function witClient(token) {
         if (err) return cb(err);
         if (res.statusCode !== 200) return cb('Expected status 200 but got ' + res.statusCode);
         const witResponse = handleWitResponse(res.body);
-        cb(err, res.body);
+        return cb(null, witResponse);
       });
-    console.log(`ask: ${message}`);
-    console.log(`ask: ${token}`);
   };
 
   return {
