@@ -14,23 +14,46 @@ function addAuthenticatedHandler(rtm, handler) {
 }
 
 function handleOnMessage(message) {
-  nlp.ask(message.text, (err, res) => {
-    if (err) return console.error(err);
+  if (message.text.toLowerCase().includes('bibop-bot')) {
+    nlp.ask(message.text, (err, res) => {
+      if (err) return console.error(err);
 
-    const { location, intent } = res.entities;
+      const { location, intent } = res.entities;
 
-    if (!intent) {
-      return rtm.sendMessage('Sorry, I don\'t know what you are talking about', message.channel);
-    } else if (intent[0].value === 'time' && location) {
-      return rtm.sendMessage(`I don't yet know the time in ${location[0].value}`, message.channel);
-    }
+      try {
+        if (!intent || !intent[0] || !intent[0].value) {
+          throw new Error('Coulld not extract intent.');
+        }
+        const handlingIntent = require(`./intents/${intent[0].value}Intent`);
 
-    rtm.sendMessage(`Nice to hear you, ${message.user}!`, message.channel)
-      .then(res => {
-        console.log('Message sent: ', res.ts);
-      })
-      .catch(console.error);
-  });
+        handlingIntent.process(res.entities, (err, response) => {
+          if (err) return console.error(err);
+          return rtm.sendMessage(response, message.channel)
+            .then()
+            .catch(console.error);
+        });
+      } catch (err) {
+        console.error(err);
+        console.error(res);
+        rtm.sendMessage('Sorry, I don\'t know what you are talking about', message.channel)
+          .catch(console.error);
+      }
+
+      // if (!intent) {
+      //   return rtm.sendMessage('Sorry, I don\'t know what you are talking about', message.channel)
+      //     .catch(console.error);
+      // } else if (intent[0].value === 'time' && location) {
+      //   return rtm.sendMessage(`I don't yet know the time in ${location[0].value}`, message.channel)
+      //     .catch(console.error);
+      // }
+
+      // rtm.sendMessage(`Nice to hear you, ${message.user}!`, message.channel)
+      //   .then(res => {
+      //     console.log('Message sent: ', res.ts);
+      //   })
+      //   .catch(console.error);
+    });
+  }
 }
 
 
