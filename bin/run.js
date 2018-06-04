@@ -1,15 +1,19 @@
 const http = require('http');
 const service = require('../server/service');
 const slackClient = require('../server/slackClient');
-const token = require('../secret/token');
+const slacktoken = require('../secret/slackToken');
+const wittoken = require('../secret/witToken');
 
 const server = http.createServer(service);
 
+const witToken = process.env.WIT_TOKEN || wittoken;
+const witClient = require('../server/witClient')(witToken);
+
 // An access token (from Slack app or custom integration - usually xoxb)
-const slackToken = process.env.SLACK_TOKEN || token;
+const slackToken = process.env.SLACK_TOKEN || slacktoken;
 const slackLogLevel = 'info'; // 'debug'
 
-const rtm = slackClient.init(slackToken, slackLogLevel);
+const rtm = slackClient.init(slackToken, slackLogLevel, witClient);
 
 rtm.start();
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
