@@ -2,6 +2,7 @@ const { RTMClient } = require('@slack/client');
 
 let rtm = null;
 let nlp = null;
+let registry = null;
 
 const handleOnAuthenticated = connectData => {
   console.log(`Logged in as ${connectData.self.name} of team ${connectData.team.name}`);
@@ -26,7 +27,7 @@ function handleOnMessage(message) {
         }
         const handlingIntent = require(`./intents/${intent[0].value}Intent`);
 
-        handlingIntent.process(res.entities, (err, response) => {
+        handlingIntent.process(res.entities, registry, (err, response) => {
           if (err) return console.error(err);
           return rtm.sendMessage(response, message.channel)
             .then()
@@ -57,10 +58,11 @@ function handleOnMessage(message) {
 }
 
 
-module.exports.init = function slackClient(token, logLevel, nlpClient) {
+module.exports.init = function slackClient(token, logLevel, nlpClient, serviceRegistry) {
   // The client is initialized and then started to get an active connection to the platform
   rtm = new RTMClient(token, { logLevel });
   nlp = nlpClient;
+  registry = serviceRegistry;
 
   rtm.on('message', message => handleOnMessage(message));
 

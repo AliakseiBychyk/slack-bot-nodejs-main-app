@@ -1,6 +1,6 @@
 const request = require('superagent');
 
-module.exports.process = function process(intentData, cb) {
+module.exports.process = function process(intentData, registry, cb) {
   if (intentData.intent[0].value !== 'time') {
     return cb(new Error(`Expected time intent, got ${intentData.intent[0].value}`));
   }
@@ -11,7 +11,10 @@ module.exports.process = function process(intentData, cb) {
 
   const location = intentData.location[0].value.replace(/,.?bibop-bot/i, '');
 
-  request.get(`http://localhost:3010/service/${location}`, (err, res) => {
+  const service = registry.get('time');
+  if (!service) return cb(false, 'No service available');
+
+  request.get(`http://${service.ip}:${service.port}/service/${location}`, (err, res) => {
     if (err || res.statusCode !== 200 || !res.body.result) {
       console.error(err);
       console.log(res.body);

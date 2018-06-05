@@ -13,7 +13,13 @@ const witClient = require('../server/witClient')(witToken);
 const slackToken = process.env.SLACK_TOKEN || slacktoken;
 const slackLogLevel = 'info'; // 'debug'
 
-const rtm = slackClient.init(slackToken, slackLogLevel, witClient);
+const serviceRegistry = service.get('serviceRegistry');
+const rtm = slackClient.init(
+  slackToken,
+  slackLogLevel,
+  witClient,
+  serviceRegistry
+);
 
 rtm.start();
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
