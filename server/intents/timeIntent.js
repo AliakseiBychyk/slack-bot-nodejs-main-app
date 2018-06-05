@@ -14,14 +14,15 @@ module.exports.process = function process(intentData, registry, cb) {
   const service = registry.get('time');
   if (!service) return cb(false, 'No service available');
 
-  request.get(`http://${service.ip}:${service.port}/service/${location}`, (err, res) => {
-    if (err || res.statusCode !== 200 || !res.body.result) {
-      console.error(err);
-      console.log(res.body);
-      return cb(false, `I had problem finding out the time in ${location}`);
-    }
+  request.get(`http://${service.ip}:${service.port}/service/${location}`)
+    .end((err, res) => {
+      if (err || res.statusCode !== 200 || !res.body.result) {
+        console.error(err);
+        console.log(res.body);
+        return cb(false, `I had problem finding out the time in ${location}`);
+      }
 
-    console.log(res.body.result);
-    return cb(false, `In ${location} it is now ${res.body.result}`);
-  });
+      console.log(res.body.result);
+      return cb(false, `In ${location} it is now ${res.body.result}`);
+    });
 };
