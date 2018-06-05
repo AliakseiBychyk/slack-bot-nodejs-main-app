@@ -1,7 +1,7 @@
 const request = require('superagent');
 
 function handleWitResponse(res) {
-  console.log('body: \n', JSON.stringify(res));
+  // console.log('body: \n', JSON.stringify(res));
   return res;
 }
 
