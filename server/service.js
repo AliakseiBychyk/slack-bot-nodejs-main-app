@@ -1,6 +1,8 @@
 const express = require('express');
+const ServiceRegistry = require('./serviceRegistry');
 
 const service = express();
+const serviceRegistry = new ServiceRegistry();
 
 service.put('/service/:intent/:port', (req, res, next) => {
   const serviceIntent = req.params.intent;
@@ -10,6 +12,7 @@ service.put('/service/:intent/:port', (req, res, next) => {
     ? `[${req.connection.remoteAddress}]`
     : req.connection.remoteAddress;
 
+  serviceRegistry.add(serviceIntent, serviceIp, servicePort);
   res.json({result: `${serviceIntent} at ${serviceIp}:${servicePort}`});
 });
 
